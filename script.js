@@ -1,4 +1,4 @@
-const backendURL = "https://notesapp-nmpz.onrender.com"; // Your Render backend URL
+const backendURL = "https://notesapp1-a9tg.onrender.com"; // Your Render backend URL
 
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
