@@ -1,14 +1,9 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+const NoteSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
-export default mongoose.model("User", userSchema);
-
-// DELETE note
-router.delete("/:id", auth, async (req, res) => {
-  await Note.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-  res.json({ message: "Note deleted" });
-});
+export default mongoose.models.Note || mongoose.model("Note", NoteSchema);
