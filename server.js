@@ -1,82 +1,88 @@
-// server.js
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import cors from "cors";
 
 dotenv.config();
-
 const app = express();
-
-// Middleware
 app.use(express.json());
-app.use(cors({
-  origin: "https://rehansheikh000004-lab.github.io", // your GitHub Pages site
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+app.use(cors());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.error("❌ MongoDB error:", err));
+// ---------- MongoDB Connection ----------
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log("❌ MongoDB Error:", err));
 
-// Schema
+// ---------- User Schema ----------
 const userSchema = new mongoose.Schema({
-  username: String,
-  password: String
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
 });
+const User = mongoose.model("User", userSchema);
 
+// ---------- Note Schema ----------
 const noteSchema = new mongoose.Schema({
   userId: String,
   title: String,
-  content: String
+  content: String,
 });
-
-const User = mongoose.model("User", userSchema);
 const Note = mongoose.model("Note", noteSchema);
 
-// Routes
-app.get("/", (req, res) => {
-  res.send("🚀 NotesApp backend running successfully!");
-});
+// ---------- Middleware ----------
+function verifyToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Access denied" });
 
-// Signup
-app.post("/api/auth/signup", async (req, res) => {
-  const { username, password } = req.body;
-  const existingUser = await User.findOne({ username });
-  if (existingUser) return res.status(400).json({ message: "User already exists" });
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+    req.userId = decoded.userId;
+    next();
+  });
+}
 
-  const user = new User({ username, password });
-  await user.save();
-  res.json({ message: "Signup successful" });
+// ---------- Routes ----------
+// Register
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+  const userExists = await User.findOne({ email });
+  if (userExists) return res.status(400).json({ message: "User already exists" });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = new User({ email, password: hashedPassword });
+  await newUser.save();
+  res.json({ message: "User registered successfully" });
 });
 
 // Login
-app.post("/api/auth/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username, password });
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
   if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-  res.json({ message: "Login successful", userId: user._id });
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) return res.status(400).json({ message: "Invalid credentials" });
+
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  res.json({ token });
 });
 
-// Get notes
-app.get("/api/notes/:userId", async (req, res) => {
-  const notes = await Note.find({ userId: req.params.userId });
+// CRUD for Notes (Protected)
+app.get("/notes", verifyToken, async (req, res) => {
+  const notes = await Note.find({ userId: req.userId });
   res.json(notes);
 });
 
-// Add note
-app.post("/api/notes", async (req, res) => {
-  const { userId, title, content } = req.body;
-  const note = new Note({ userId, title, content });
-  await note.save();
-  res.json({ message: "Note added successfully" });
+app.post("/notes", verifyToken, async (req, res) => {
+  const newNote = new Note({ ...req.body, userId: req.userId });
+  await newNote.save();
+  res.json(newNote);
 });
 
-// Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.delete("/notes/:id", verifyToken, async (req, res) => {
+  await Note.findByIdAndDelete(req.params.id);
+  res.json({ message: "Note deleted" });
+});
+
+app.listen(3000, () => console.log("✅ NotesApp backend running successfully"));
