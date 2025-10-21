@@ -1,64 +1,38 @@
 body {
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  margin: 0;
-  padding: 0;
+  font-family: Poppins, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #acb6e5);
 }
 
-.container, .notes-container {
+.container {
   background: white;
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-  width: 90%;
-  max-width: 400px;
-}
-
-h1 {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   text-align: center;
-  color: #1565c0;
+  width: 320px;
 }
 
-input, textarea, button {
+input, button {
+  display: block;
   width: 100%;
+  margin: 10px 0;
   padding: 10px;
-  margin: 8px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
 }
 
 button {
-  background: #1565c0;
+  background: #007bff;
   color: white;
-  border: none;
   cursor: pointer;
+  font-weight: bold;
+  border: none;
 }
 
 button:hover {
-  background: #0d47a1;
-}
-
-#notes-list {
-  margin-top: 20px;
-}
-
-.note {
-  background: #f1f8e9;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.note h3 {
-  margin: 0;
-  color: #33691e;
-}
-
-.note p {
-  margin: 5px 0 0;
+  background: #0056b3;
 }
