@@ -85,4 +85,4 @@ app.delete("/notes/:id", verifyToken, async (req, res) => {
   res.json({ message: "Note deleted" });
 });
 
-app.listen(3000, () => console.log("✅ NotesApp backend running successfully"));
+app.listen(5000, () => console.log("✅ NotesApp backend running successfully"));
