@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const NoteSchema = new mongoose.Schema({
+const noteSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: String,
-  content: String,
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  content: String
 });
 
-export default mongoose.models.Note || mongoose.model("Note", NoteSchema);
+export default mongoose.models.Note || mongoose.model("Note", noteSchema);
