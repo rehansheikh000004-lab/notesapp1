@@ -1,172 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Notes</title>
-    <link rel="stylesheet" href="style.css" />
-    <style>
-      body {
-        font-family: Poppins, sans-serif;
-        background: linear-gradient(135deg, #74ebd5, #acb6e5);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Notes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Your Notes</h1>
+    <div id="notes-container"></div>
 
-      .notes-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        padding: 20px;
-        max-width: 500px;
-        width: 100%;
-      }
+    <input type="text" id="note-title" placeholder="Note title" />
+    <textarea id="note-content" placeholder="Write your note here..."></textarea>
+    <button id="add-note">Add Note</button>
+  </div>
 
-      .note {
-        background: #f4f6ff;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 10px 0;
-        text-align: left;
-        position: relative;
-      }
-
-      .delete-btn {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        background: crimson;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        padding: 5px 10px;
-      }
-
-      textarea,
-      input {
-        width: 100%;
-        padding: 10px;
-        margin: 8px 0;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-      }
-
-      button {
-        width: 100%;
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      button:hover {
-        background: #0056b3;
-      }
-
-      .logout-btn {
-        margin-top: 15px;
-        background: #ff4d4d;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="notes-container">
-      <h2>Your Notes 📝</h2>
-
-      <input type="text" id="note-title" placeholder="Note Title" />
-      <textarea id="note-content" rows="4" placeholder="Write your note..."></textarea>
-      <button id="add-note">Add Note</button>
-
-      <h3>Saved Notes:</h3>
-      <div id="notes-list"></div>
-
-      <button class="logout-btn" id="logout-btn">Logout</button>
-    </div>
-
-    <script>
-      const backendURL = "https://notesapp-nmpz.onrender.com";
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        window.location.href = "index.html";
-      }
-
-      const notesList = document.getElementById("notes-list");
-      const addBtn = document.getElementById("add-note");
-
-      // ✅ Load notes
-      async function loadNotes() {
-        notesList.innerHTML = "<p>Loading notes...</p>";
-        const res = await fetch(`${backendURL}/api/notes`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const notes = await res.json();
-        notesList.innerHTML = "";
-        if (notes.length === 0) {
-          notesList.innerHTML = "<p>No notes yet.</p>";
-        }
-        notes.forEach((n) => {
-          const div = document.createElement("div");
-          div.className = "note";
-          div.innerHTML = `
-            <h4>${n.title}</h4>
-            <p>${n.content}</p>
-            <button class="delete-btn" onclick="deleteNote('${n._id}')">Delete</button>
-          `;
-          notesList.appendChild(div);
-        });
-      }
-
-      // ✅ Add new note
-      addBtn.addEventListener("click", async () => {
-        const title = document.getElementById("note-title").value;
-        const content = document.getElementById("note-content").value;
-        if (!title || !content) {
-          alert("Please fill all fields");
-          return;
-        }
-
-        const res = await fetch(`${backendURL}/api/notes`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title, content }),
-        });
-
-        if (res.ok) {
-          document.getElementById("note-title").value = "";
-          document.getElementById("note-content").value = "";
-          loadNotes();
-        } else {
-          alert("Failed to add note");
-        }
-      });
-
-      // ✅ Delete note
-      async function deleteNote(id) {
-        if (!confirm("Delete this note?")) return;
-        const res = await fetch(`${backendURL}/api/notes/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) loadNotes();
-      }
-
-      // ✅ Logout
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("token");
-        window.location.href = "index.html";
-      });
-
-      loadNotes();
-    </script>
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>
