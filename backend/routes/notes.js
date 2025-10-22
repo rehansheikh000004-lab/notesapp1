@@ -3,29 +3,27 @@ import jwt from "jsonwebtoken";
 import Note from "../models/Note.js";
 
 const router = express.Router();
+const JWT_SECRET = "supersecretkey";
 
-// Middleware to verify token
-function auth(req, res, next) {
-  const token = req.header("Authorization")?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "Access denied" });
+function authenticate(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
-  try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ message: "Invalid token" });
+    req.user = decoded;
     next();
-  } catch {
-    res.status(400).json({ message: "Invalid token" });
-  }
+  });
 }
 
-router.get("/", auth, async (req, res) => {
-  const notes = await Note.find({ userId: req.user.id });
+router.get("/", authenticate, async (req, res) => {
+  const notes = await Note.find({ userId: req.user.userId });
   res.json(notes);
 });
 
-router.post("/", auth, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   const { title, content } = req.body;
-  const note = new Note({ title, content, userId: req.user.id });
+  const note = new Note({ userId: req.user.userId, title, content });
   await note.save();
   res.json(note);
 });
