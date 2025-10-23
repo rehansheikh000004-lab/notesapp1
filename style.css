@@ -1,40 +1,61 @@
 body {
-  font-family: "Poppins", sans-serif;
-  background: #f8f9fa;
+  font-family: Poppins, sans-serif;
+  background: #f4f4f8;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .container {
   background: white;
-  padding: 2rem;
+  padding: 25px 30px;
   border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  width: 350px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 400px;
+}
+
+h1, h2 {
+  text-align: center;
 }
 
 input, textarea {
-  display: block;
   width: 100%;
-  margin: 0.5rem 0;
-  padding: 0.8rem;
-  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
   border: 1px solid #ccc;
+  outline: none;
 }
 
 button {
-  background: #007bff;
-  color: white;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
   width: 100%;
-  margin-top: 0.5rem;
+  padding: 10px;
+  background: #2b73f8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+button.secondary {
+  background: #555;
 }
 
 button:hover {
-  background: #0056b3;
+  opacity: 0.9;
+}
+
+#notesList {
+  margin-top: 20px;
+}
+
+.note {
+  background: #eef2ff;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
