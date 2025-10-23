@@ -3,25 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notes App - Login / Signup</title>
+  <title>NotesApp - Login</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Notes App</h1>
+    <h1>NotesApp</h1>
 
-    <div id="form-container">
-      <h2>Signup</h2>
-      <input type="text" id="signup-username" placeholder="Username" />
-      <input type="email" id="signup-email" placeholder="Email" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <button id="signup-btn">Signup</button>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
 
-      <h2>Login</h2>
-      <input type="email" id="login-email" placeholder="Email" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-btn">Login</button>
-    </div>
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn" class="secondary">Create Account</button>
+
+    <p id="message"></p>
   </div>
 
   <script src="script.js"></script>
