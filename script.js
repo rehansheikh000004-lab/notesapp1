@@ -1,65 +1,76 @@
 const backendURL = "https://notesapp1-a9tg.onrender.com";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const signupBtn = document.getElementById("signup-btn");
-  const loginBtn = document.getElementById("login-btn");
-  const addNoteBtn = document.getElementById("add-note");
-
-  if (signupBtn) signupBtn.addEventListener("click", signup);
-  if (loginBtn) loginBtn.addEventListener("click", login);
-  if (addNoteBtn) addNoteBtn.addEventListener("click", addNote);
-});
-
-async function signup() {
-  const username = document.getElementById("signup-username").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
+// ---------- SIGNUP ----------
+document.getElementById("signupBtn")?.addEventListener("click", async () => {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   const res = await fetch(`${backendURL}/api/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password })
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await res.json();
-  alert(data.message);
-}
+  document.getElementById("message").textContent = data.message || "Signup failed!";
+});
 
-async function login() {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+// ---------- LOGIN ----------
+document.getElementById("loginBtn")?.addEventListener("click", async () => {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   const res = await fetch(`${backendURL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await res.json();
-
-  if (data.token) {
-    localStorage.setItem("token", data.token);
+  if (data.userId) {
+    localStorage.setItem("userId", data.userId);
     window.location.href = "notes.html";
   } else {
-    alert(data.message);
+    document.getElementById("message").textContent = data.message;
+  }
+});
+
+// ---------- NOTES ----------
+const userId = localStorage.getItem("userId");
+
+async function loadNotes() {
+  if (!userId) return;
+  const res = await fetch(`${backendURL}/api/notes/${userId}`);
+  const notes = await res.json();
+
+  const notesList = document.getElementById("notesList");
+  if (notesList) {
+    notesList.innerHTML = "";
+    notes.forEach(note => {
+      const div = document.createElement("div");
+      div.className = "note";
+      div.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
+      notesList.appendChild(div);
+    });
   }
 }
 
-async function addNote() {
-  const title = document.getElementById("note-title").value;
-  const content = document.getElementById("note-content").value;
+document.getElementById("saveNoteBtn")?.addEventListener("click", async () => {
+  const title = document.getElementById("noteTitle").value;
+  const content = document.getElementById("noteContent").value;
 
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${backendURL}/api/notes`, {
+  await fetch(`${backendURL}/api/notes`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ title, content })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, title, content }),
   });
 
-  const data = await res.json();
-  console.log("Note added:", data);
-}
+  loadNotes();
+});
+
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+  localStorage.removeItem("userId");
+  window.location.href = "index.html";
+});
+
+loadNotes();
