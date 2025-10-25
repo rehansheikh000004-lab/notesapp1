@@ -1,61 +1,70 @@
 body {
-  font-family: Poppins, sans-serif;
-  background: #f4f4f8;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #000000, #b88a44);
+  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  margin: 0;
 }
 
 .container {
-  background: white;
-  padding: 25px 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 90%;
-  max-width: 400px;
-}
-
-h1, h2 {
   text-align: center;
 }
 
-input, textarea {
-  width: 100%;
-  margin: 10px 0;
+h1 {
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: gold;
+}
+
+.form-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 20px;
+  width: 300px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.input {
+  width: 90%;
   padding: 10px;
+  margin: 10px 0;
+  border: none;
   border-radius: 8px;
-  border: 1px solid #ccc;
   outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 button {
-  width: 100%;
+  width: 95%;
   padding: 10px;
-  background: #2b73f8;
-  color: white;
   border: none;
   border-radius: 8px;
+  background-color: gold;
+  color: black;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-button.secondary {
-  background: #555;
 }
 
 button:hover {
-  opacity: 0.9;
+  background-color: #d4af37;
 }
 
-#notesList {
-  margin-top: 20px;
+.message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: lightgreen;
 }
 
-.note {
-  background: #eef2ff;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 10px;
+.hidden {
+  display: none;
+}
+
+#toggle-link {
+  color: gold;
+  cursor: pointer;
 }
