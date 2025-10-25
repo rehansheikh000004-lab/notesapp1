@@ -1,76 +1,72 @@
-const backendURL = "https://notesapp1-a9tg.onrender.com";
+const API_BASE = "https://notesapp1-a9tg.onrender.com/api/auth"; // 🔥 Replace with your actual Render URL
 
-// ---------- SIGNUP ----------
-document.getElementById("signupBtn")?.addEventListener("click", async () => {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const authBtn = document.getElementById("auth-btn");
+const toggleText = document.getElementById("toggle-text");
+const toggleLink = document.getElementById("toggle-link");
+const message = document.getElementById("message");
+const formTitle = document.getElementById("form-title");
 
-  const res = await fetch(`${backendURL}/api/auth/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+let isLogin = true;
 
-  const data = await res.json();
-  document.getElementById("message").textContent = data.message || "Signup failed!";
+toggleLink.addEventListener("click", () => {
+  isLogin = !isLogin;
+  formTitle.textContent = isLogin ? "Login" : "Sign Up";
+  authBtn.textContent = isLogin ? "Login" : "Sign Up";
+  toggleText.innerHTML = isLogin
+    ? `Don't have an account? <span id="toggle-link">Sign up</span>`
+    : `Already have an account? <span id="toggle-link">Login</span>`;
+  message.textContent = "";
+
+  nameInput.classList.toggle("hidden", isLogin);
 });
 
-// ---------- LOGIN ----------
-document.getElementById("loginBtn")?.addEventListener("click", async () => {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  const res = await fetch(`${backendURL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
-
-  const data = await res.json();
-  if (data.userId) {
-    localStorage.setItem("userId", data.userId);
-    window.location.href = "notes.html";
-  } else {
-    document.getElementById("message").textContent = data.message;
+document.addEventListener("click", (e) => {
+  if (e.target.id === "toggle-link") {
+    toggleLink.click();
   }
 });
 
-// ---------- NOTES ----------
-const userId = localStorage.getItem("userId");
+authBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const name = nameInput.value.trim();
 
-async function loadNotes() {
-  if (!userId) return;
-  const res = await fetch(`${backendURL}/api/notes/${userId}`);
-  const notes = await res.json();
+  if (!email || !password || (!isLogin && !name)) {
+    message.textContent = "Please fill all fields.";
+    return;
+  }
 
-  const notesList = document.getElementById("notesList");
-  if (notesList) {
-    notesList.innerHTML = "";
-    notes.forEach(note => {
-      const div = document.createElement("div");
-      div.className = "note";
-      div.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
-      notesList.appendChild(div);
+  try {
+    const endpoint = isLogin ? `${API_BASE}/login` : `${API_BASE}/signup`;
+    const body = isLogin ? { email, password } : { name, email, password };
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      message.textContent = data.message || "Something went wrong";
+      message.style.color = "red";
+      return;
+    }
+
+    if (isLogin) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "dashboard.html";
+    } else {
+      message.textContent = "Account created successfully! Please login.";
+      message.style.color = "lightgreen";
+      toggleLink.click();
+    }
+  } catch (err) {
+    message.textContent = "Server error. Try again later.";
+    message.style.color = "red";
   }
-}
-
-document.getElementById("saveNoteBtn")?.addEventListener("click", async () => {
-  const title = document.getElementById("noteTitle").value;
-  const content = document.getElementById("noteContent").value;
-
-  await fetch(`${backendURL}/api/notes`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, title, content }),
-  });
-
-  loadNotes();
 });
-
-document.getElementById("logoutBtn")?.addEventListener("click", () => {
-  localStorage.removeItem("userId");
-  window.location.href = "index.html";
-});
-
-loadNotes();
