@@ -1,67 +1,50 @@
 import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/auth.js";
+import taskRoutes from "./routes/tasks.js";
+
 dotenv.config();
 
 const app = express();
+
+// ----- Middleware -----
 app.use(express.json());
+
+// CORS: change these origins to your frontend URLs
+const allowedOrigins = [
+  "https://rehansheikh000004-lab.github.io",
+  "https://rehansheikh000004-lab.github.io/notesapp1",
+  "http://localhost:5173",
+  "http://localhost:5000"
+];
+
 app.use(cors({
-  origin: "https://rehansheikh000004-lab.github.io", // your GitHub Pages site
-  methods: ["GET", "POST"],
+  origin: (origin, callback) => {
+    // allow requests with no origin (like curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("CORS policy: Origin not allowed"), false);
+  },
+  credentials: true
 }));
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log("✅ MongoDB connected"))
-  .catch(err => console.log("❌ MongoDB error:", err));
-
-const userSchema = new mongoose.Schema({
-  username: String,
-  password: String
-});
-const noteSchema = new mongoose.Schema({
-  userId: String,
-  title: String,
-  content: String
-});
-
-const User = mongoose.model("User", userSchema);
-const Note = mongoose.model("Note", noteSchema);
-
-app.get("/", (req, res) => res.send("🚀 NotesApp backend running successfully!"));
-
-// Signup
-app.post("/api/auth/signup", async (req, res) => {
-  const { username, password } = req.body;
-  const existing = await User.findOne({ username });
-  if (existing) return res.status(400).json({ message: "User already exists" });
-
-  const user = new User({ username, password });
-  await user.save();
-  res.json({ message: "Signup successful" });
-});
-
-// Login
-app.post("/api/auth/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username, password });
-  if (!user) return res.status(400).json({ message: "Invalid credentials" });
-  res.json({ message: "Login successful", userId: user._id });
-});
-
-// Notes
-app.get("/api/notes/:userId", async (req, res) => {
-  const notes = await Note.find({ userId: req.params.userId });
-  res.json(notes);
-});
-app.post("/api/notes", async (req, res) => {
-  const { userId, title, content } = req.body;
-  const note = new Note({ userId, title, content });
-  await note.save();
-  res.json({ message: "Note added successfully" });
-});
-
+// ----- Connect DB & start server -----
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+connectDB()
+  .then(() => {
+    // Routes
+    app.use("/api/auth", authRoutes);
+    app.use("/api/tasks", taskRoutes);
+
+    // simple root route
+    app.get("/", (req, res) => res.json({ message: "Luxvora Tasks backend running" }));
+
+    app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  });
