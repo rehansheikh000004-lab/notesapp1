@@ -1,70 +1,79 @@
 body {
+  margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #000000, #b88a44);
-  color: white;
+  height: 100vh;
+  background: radial-gradient(circle at 20% 20%, #000, #111);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.container {
-  text-align: center;
-}
-
-h1 {
-  margin-bottom: 30px;
-  letter-spacing: 2px;
-  font-weight: 600;
-  color: gold;
-}
-
-.form-box {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 30px;
-  border-radius: 20px;
-  width: 300px;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.input {
-  width: 90%;
-  padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 8px;
-  outline: none;
-  background: rgba(255, 255, 255, 0.2);
   color: white;
 }
 
-button {
-  width: 95%;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background-color: gold;
-  color: black;
-  font-weight: 600;
-  cursor: pointer;
+.glass-card {
+  width: 350px;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  backdrop-filter: blur(12px);
+  text-align: center;
 }
 
-button:hover {
-  background-color: #d4af37;
-}
-
-.message {
-  margin-top: 10px;
-  font-size: 14px;
-  color: lightgreen;
-}
-
-.hidden {
-  display: none;
-}
-
-#toggle-link {
+.title {
+  font-size: 28px;
   color: gold;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: gold;
+  color: black;
+  font-weight: bold;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #ffea80;
+}
+
+.btn.gold {
+  background: linear-gradient(90deg, gold, #b8860b);
+}
+
+.toggle-text {
+  margin-top: 15px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+a {
+  color: gold;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
