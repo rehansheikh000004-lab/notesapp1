@@ -1,96 +1,59 @@
-const API_URL = "https://notesapp1-a9tg.onrender.com"; // 🔥 Change this
+const backendUrl = "https://notesapp1-a9tg.onrender.com/api";
+let token = localStorage.getItem("token");
 
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
-const authBtn = document.getElementById("auth-btn");
-const switchForm = document.getElementById("switch-form");
-const message = document.getElementById("message");
-
-let isLogin = false;
-
-if (switchForm) {
-  switchForm.addEventListener("click", (e) => {
-    e.preventDefault();
-    isLogin = !isLogin;
-    document.getElementById("form-title").textContent = isLogin
-      ? "Login"
-      : "Create Account";
-    authBtn.textContent = isLogin ? "Login" : "Sign Up";
-    switchForm.innerHTML = isLogin
-      ? 'Don’t have an account? <a href="#">Sign Up</a>'
-      : 'Already have an account? <a href="#">Login</a>';
+async function signup() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const res = await fetch(`${backendUrl}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
   });
+  const data = await res.json();
+  alert(data.message || "Signup complete");
 }
 
-if (authBtn) {
-  authBtn.addEventListener("click", async () => {
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!username || !password) {
-      message.textContent = "Please fill all fields";
-      return;
-    }
-
-    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
-    const res = await fetch(`${API_URL}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      message.textContent = data.message;
-      if (isLogin) {
-        localStorage.setItem("userId", data.userId);
-        window.location.href = "notes.html";
-      }
-    } else {
-      message.textContent = data.message || "Error occurred";
-    }
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const res = await fetch(`${backendUrl}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
   });
-}
+  const data = await res.json();
 
-// NOTES PAGE LOGIC
-const addNoteBtn = document.getElementById("add-note");
-
-if (addNoteBtn) {
-  const userId = localStorage.getItem("userId");
-  const titleInput = document.getElementById("note-title");
-  const contentInput = document.getElementById("note-content");
-  const notesContainer = document.getElementById("notes-container");
-
-  async function fetchNotes() {
-    const res = await fetch(`${API_URL}/api/notes/${userId}`);
-    const notes = await res.json();
-    notesContainer.innerHTML = notes
-      .map(
-        (note) => `
-      <div class="note">
-        <h3>${note.title}</h3>
-        <p>${note.content}</p>
-      </div>`
-      )
-      .join("");
+  if (data.token) {
+    token = data.token;
+    localStorage.setItem("token", token);
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("notes").style.display = "block";
+    loadNotes();
+  } else {
+    alert(data.message);
   }
+}
 
-  fetchNotes();
+async function addNote() {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
 
-  addNoteBtn.addEventListener("click", async () => {
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
-
-    if (!title || !content) return alert("Please fill all fields");
-
-    await fetch(`${API_URL}/api/notes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, title, content }),
-    });
-
-    titleInput.value = "";
-    contentInput.value = "";
-    fetchNotes();
+  await fetch(`${backendUrl}/notes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title, content }),
   });
+  loadNotes();
+}
+
+async function loadNotes() {
+  const res = await fetch(`${backendUrl}/notes`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const notes = await res.json();
+  const container = document.getElementById("allNotes");
+  container.innerHTML = notes.map((n) => `<p><b>${n.title}</b>: ${n.content}</p>`).join("");
 }
