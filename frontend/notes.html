@@ -9,16 +9,13 @@
 <body>
   <div class="container">
     <h1>Your Notes</h1>
-    <button id="logoutBtn" class="secondary">Logout</button>
-
-    <div class="note-form">
-      <input type="text" id="noteTitle" placeholder="Note title" />
-      <textarea id="noteContent" placeholder="Write your note here..."></textarea>
-      <button id="saveNoteBtn">Save Note</button>
+    <div id="note-form">
+      <input type="text" id="note-title" placeholder="Note Title" />
+      <textarea id="note-content" placeholder="Note Content"></textarea>
+      <button id="add-note">Add Note</button>
     </div>
 
-    <h2>Saved Notes</h2>
-    <div id="notesList"></div>
+    <div id="notes-container"></div>
   </div>
 
   <script src="script.js"></script>
