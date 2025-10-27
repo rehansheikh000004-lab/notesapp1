@@ -1,0 +1,55 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+  color: white;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-container, .notes-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+button {
+  margin-top: 12px;
+  padding: 10px 15px;
+  background: gold;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+span {
+  color: gold;
+  cursor: pointer;
+}
+
+.note-card {
+  background: rgba(255,255,255,0.15);
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.logout-btn {
+  background: crimson;
+  margin-top: 10px;
+}
