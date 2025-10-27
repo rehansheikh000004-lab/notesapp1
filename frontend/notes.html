@@ -7,15 +7,17 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Your Notes</h1>
-    <div id="note-form">
-      <input type="text" id="note-title" placeholder="Note Title" />
-      <textarea id="note-content" placeholder="Note Content"></textarea>
-      <button id="add-note">Add Note</button>
+  <div class="notes-container">
+    <h1>📒 Your Notes</h1>
+    <button id="logout">Logout</button>
+
+    <div class="note-form">
+      <input type="text" id="noteTitle" placeholder="Note title" />
+      <textarea id="noteContent" placeholder="Write your note..."></textarea>
+      <button id="addNoteBtn">Add Note</button>
     </div>
 
-    <div id="notes-container"></div>
+    <div id="notesList"></div>
   </div>
 
   <script src="script.js"></script>
