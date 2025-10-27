@@ -1,102 +1,35 @@
-const backendUrl = "https://notesapp1-a9tg.onrender.com"; // your render backend
+const API = "https://notesapp1-a9tg.onrender.com"; // your Render backend URL
 
-// === LOGIN & SIGNUP PAGE ===
-if (document.getElementById("submitBtn")) {
-  const formTitle = document.getElementById("form-title");
-  const toggleForm = document.getElementById("toggleForm");
-  const submitBtn = document.getElementById("submitBtn");
-  const message = document.getElementById("message");
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-  let isLogin = true;
-
-  toggleForm.addEventListener("click", () => {
-    isLogin = !isLogin;
-    formTitle.textContent = isLogin ? "Login" : "Signup";
-    submitBtn.textContent = isLogin ? "Login" : "Signup";
-    toggleForm.innerHTML = isLogin
-      ? `Don't have an account? <span>Signup</span>`
-      : `Already have an account? <span>Login</span>`;
-    message.textContent = "";
+  const res = await fetch(`${API}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
   });
 
-  submitBtn.addEventListener("click", async () => {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
+  const data = await res.json();
+  alert(data.message);
+});
 
-    if (!username || !password) {
-      message.textContent = "Please fill all fields";
-      return;
-    }
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/signup";
-    const res = await fetch(`${backendUrl}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const data = await res.json();
-    if (!res.ok) {
-      message.textContent = data.message || "Error occurred";
-      return;
-    }
-
-    if (isLogin) {
-      localStorage.setItem("userId", data.userId);
-      localStorage.setItem("token", data.token);
-      window.location.href = "notes.html";
-    } else {
-      message.textContent = "Signup successful! Please login.";
-      isLogin = true;
-      formTitle.textContent = "Login";
-      submitBtn.textContent = "Login";
-    }
-  });
-}
-
-// === NOTES PAGE ===
-if (document.getElementById("addNoteBtn")) {
-  const userId = localStorage.getItem("userId");
-  if (!userId) window.location.href = "index.html";
-
-  const notesList = document.getElementById("notesList");
-
-  const loadNotes = async () => {
-    const res = await fetch(`${backendUrl}/api/notes/${userId}`);
-    const notes = await res.json();
-    notesList.innerHTML = "";
-    notes.forEach((note) => {
-      const div = document.createElement("div");
-      div.className = "note";
-      div.innerHTML = `
-        <h3>${note.title}</h3>
-        <p>${note.content}</p>
-      `;
-      notesList.appendChild(div);
-    });
-  };
-
-  loadNotes();
-
-  document.getElementById("addNoteBtn").addEventListener("click", async () => {
-    const title = document.getElementById("noteTitle").value.trim();
-    const content = document.getElementById("noteContent").value.trim();
-
-    if (!title || !content) return alert("Please enter both title and content");
-
-    await fetch(`${backendUrl}/api/notes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, title, content }),
-    });
-
-    document.getElementById("noteTitle").value = "";
-    document.getElementById("noteContent").value = "";
-    loadNotes();
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
   });
 
-  document.getElementById("logout").addEventListener("click", () => {
-    localStorage.clear();
-    window.location.href = "index.html";
-  });
-}
+  const data = await res.json();
+
+  if (data.userId) {
+    localStorage.setItem("userId", data.userId);
+    window.location.href = "notes.html";
+  } else {
+    alert(data.message);
+  }
+});
