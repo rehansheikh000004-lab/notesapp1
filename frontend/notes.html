@@ -1,25 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Your Notes</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="notes-container">
-    <h1>📒 Your Notes</h1>
-    <button id="logout">Logout</button>
-
-    <div class="note-form">
-      <input type="text" id="noteTitle" placeholder="Note title" />
-      <textarea id="noteContent" placeholder="Write your note..."></textarea>
-      <button id="addNoteBtn">Add Note</button>
-    </div>
-
+  <div class="container">
+    <h1>Your Notes</h1>
+    <textarea id="noteTitle" placeholder="Title"></textarea>
+    <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+    <button id="saveNote">Save Note</button>
     <div id="notesList"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const API = "https://notesapp1-a9tg.onrender.com"; // change to your backend render URL
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) window.location.href = "index.html";
+
+    async function loadNotes() {
+      const res = await fetch(`${API}/notes/${userId}`);
+      const notes = await res.json();
+      document.getElementById("notesList").innerHTML =
+        notes.map(n => `<div class='note'><h3>${n.title}</h3><p>${n.content}</p></div>`).join("");
+    }
+
+    document.getElementById("saveNote").addEventListener("click", async () => {
+      const title = document.getElementById("noteTitle").value;
+      const content = document.getElementById("noteContent").value;
+      await fetch(`${API}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, title, content })
+      });
+      loadNotes();
+    });
+
+    loadNotes();
+  </script>
 </body>
 </html>
