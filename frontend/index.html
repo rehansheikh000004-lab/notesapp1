@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NotesApp - Login / Signup</title>
+  <title>Notes App</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>NotesApp</h1>
-
-    <div class="auth-box">
-      <h2 id="form-title">Create Account</h2>
-
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Password" required />
-
-      <button id="auth-btn">Sign Up</button>
-      <p id="switch-form">Already have an account? <a href="#">Login</a></p>
-
-      <p id="message"></p>
-    </div>
+  <h1>Notes App</h1>
+  <div id="auth">
+    <input id="username" placeholder="Username" />
+    <input id="password" placeholder="Password" type="password" />
+    <button onclick="signup()">Signup</button>
+    <button onclick="login()">Login</button>
+  </div>
+  <div id="notes" style="display:none;">
+    <textarea id="title" placeholder="Title"></textarea>
+    <textarea id="content" placeholder="Content"></textarea>
+    <button onclick="addNote()">Add Note</button>
+    <div id="allNotes"></div>
   </div>
 
   <script src="script.js"></script>
